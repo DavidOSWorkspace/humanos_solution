@@ -1,0 +1,27 @@
+import nbformat as n
+from pathlib import Path
+p=Path(__file__).parent
+nb=n.v4.new_notebook()
+def md(s):nb.cells.append(n.v4.new_markdown_cell(s))
+def code(s):nb.cells.append(n.v4.new_code_cell(s))
+md('# HumanOS — práctica completa + Opción A\nNotebook guiado para Google Colab. Ejecuta cada celda en orden. El código principal está en `src/humanos/`.')
+md('## 0. Cargar los archivos\nMantén los nombres `responsesdf`, `configdf`, `predictivedf` de tu trabajo. Modifica solo `BASE` si la carpeta cambia.')
+code("import pandas as pd\nimport numpy as np\nfrom google.colab import drive\ndrive.mount('/content/drive')\nBASE = '/content/drive/My Drive/Colab Notebooks/Silverce'\nresponsesdf = pd.read_csv(f'{BASE}/responses.csv')\nconfigdf = pd.read_csv(f'{BASE}/item_config.csv')\npredictivedf = pd.read_csv(f'{BASE}/predictive_challenge.csv')\nprint(responsesdf.shape, configdf.shape, predictivedf.shape)")
+md('## 1. Obligatoria A: validación y cálculo de señales\nInvertimos `6-x` cuando `reverse_flag=True`, transformamos a `25*(x-1)` y calculamos la media ponderada según `weight`.')
+code("import sys\nsys.path.insert(0, f'{BASE}/src')\nfrom humanos.core import validate, calculate_signals, organization_signals, moments, cohort_report\nvalidate(responsesdf, configdf)\nscored = calculate_signals(responsesdf, configdf)\ndisplay(scored.head())\ndisplay(pd.DataFrame(organization_signals(scored)))")
+md('## 2. Obligatoria B: momentos no exclusivos\nLas fórmulas son heurísticas exploratorias y no sustituyen una escala validada. No se usa la edad para inferir un momento.')
+code("momentsdf = moments(scored)\ndisplay(momentsdf.head())\ndisplay(momentsdf.drop(columns='participant_id').mean().round(2))")
+md('## 3. Obligatoria C: cohortes y umbral de privacidad\n`n<10` implica `reportable=False`, `score=None`, `delta=None`.')
+code("cohortsdf = pd.DataFrame(cohort_report(scored))\ndisplay(cohortsdf.head(12))\ndisplay(cohortsdf[~cohortsdf.reportable].head())")
+md('## 4. Obligatoria D: API\nEl servicio está en `src/humanos/api.py`. En tu ordenador ejecuta `uvicorn humanos.api:app --reload` desde la carpeta del proyecto y visita `/docs`.')
+md('## 5. Opción A: EDA\nEl dataset predictivo es independiente del de las señales. La diferencia W2−W1 sirve para descripción, no como feature.')
+code("display(predictivedf.head())\nprint(predictivedf.info())\nprint('Nulos:',predictivedf.isna().sum().sum())\nprint('IDs duplicados:',predictivedf.participant_id.duplicated().sum())\npredictivedf['change'] = predictivedf.future_visibility_w2 - predictivedf.future_visibility_w1\ndisplay(predictivedf['change'].describe().round(2))")
+md('## 6. Visualización del target y cambio')
+code("import matplotlib.pyplot as plt\nfig, ax = plt.subplots(figsize=(8,4))\nax.hist(predictivedf['change'], bins=25)\nax.axvline(0, linestyle='--', color='black')\nax.set(xlabel='Cambio W2 - W1',ylabel='Participantes',title='Distribución del cambio')\nplt.show()")
+md('## 7. Modelado reproducible\nTarget: W2. Se comparan baseline, Ridge, Random Forest y Gradient Boosting. CV se calcula solo sobre train. El preprocesamiento se aprende dentro de cada fold.')
+code("from humanos.predictive import run\nreport, predictions = run(f'{BASE}/predictive_challenge.csv')\ndisplay(pd.DataFrame({name:{**v['test'], 'cv_train_mae':v['cv_train_mae'],'cv_train_r2':v['cv_train_r2']} for name,v in report['model_results'].items()}).T)\ndisplay(predictions.head())")
+md('## 8. Interpretación y overfitting\nComparar métricas de train, CV y test. Una caída grande de train a test sugiere sobreajuste. Permutation importance expresa pérdida de MAE al permutar una feature; no implica causalidad.')
+code("display(pd.DataFrame(report['model_results']).T)\ndisplay(pd.Series(report['ridge_permutation_mae_improvement']).sort_values(ascending=False).to_frame('Incremento MAE al permutar'))")
+md('## 9. Conclusiones\nEl error de test cuantifica precisión en datos reservados. No se infieren causas, diagnósticos personales ni decisiones laborales. Ver README para el análisis del apartado 9 y limitaciones.')
+nb.metadata={'kernelspec':{'display_name':'Python 3','language':'python','name':'python3'}}
+n.write(nb,p/'notebooks'/'humanos_colab.ipynb')

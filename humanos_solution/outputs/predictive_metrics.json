@@ -1,0 +1,75 @@
+{
+  "dataset_rows": 360,
+  "train_rows": 288,
+  "test_rows": 72,
+  "target": "future_visibility_w2",
+  "model_results": {
+    "baseline": {
+      "cv_train_mae": 9.533,
+      "cv_train_r2": -0.004,
+      "train": {
+        "mae": 9.521,
+        "rmse": 11.991,
+        "r2": 0.0
+      },
+      "test": {
+        "mae": 9.114,
+        "rmse": 11.467,
+        "r2": -0.003
+      }
+    },
+    "ridge": {
+      "cv_train_mae": 6.662,
+      "cv_train_r2": 0.485,
+      "train": {
+        "mae": 6.2,
+        "rmse": 7.976,
+        "r2": 0.558
+      },
+      "test": {
+        "mae": 6.939,
+        "rmse": 8.875,
+        "r2": 0.399
+      }
+    },
+    "random_forest": {
+      "cv_train_mae": 6.828,
+      "cv_train_r2": 0.462,
+      "train": {
+        "mae": 3.541,
+        "rmse": 4.78,
+        "r2": 0.841
+      },
+      "test": {
+        "mae": 7.068,
+        "rmse": 8.717,
+        "r2": 0.421
+      }
+    },
+    "gradient_boosting": {
+      "cv_train_mae": 7.134,
+      "cv_train_r2": 0.41,
+      "train": {
+        "mae": 3.084,
+        "rmse": 4.001,
+        "r2": 0.889
+      },
+      "test": {
+        "mae": 7.429,
+        "rmse": 9.541,
+        "r2": 0.306
+      }
+    }
+  },
+  "ridge_permutation_mae_improvement": {
+    "learning_appetite_w1": -0.021,
+    "learning_capacity_w1": 0.129,
+    "development_access_w1": 0.508,
+    "professional_agency_w1": 0.341,
+    "knowledge_exchange_w1": 0.016,
+    "future_visibility_w1": 5.046,
+    "age_group": -0.01,
+    "role": 0.014,
+    "work_mode": -0.0
+  }
+}

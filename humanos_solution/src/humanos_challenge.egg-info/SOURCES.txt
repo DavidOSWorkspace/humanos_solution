@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+src/humanos/__init__.py
+src/humanos/api.py
+src/humanos/core.py
+src/humanos/predictive.py
+src/humanos_challenge.egg-info/PKG-INFO
+src/humanos_challenge.egg-info/SOURCES.txt
+src/humanos_challenge.egg-info/dependency_links.txt
+src/humanos_challenge.egg-info/requires.txt
+src/humanos_challenge.egg-info/top_level.txt
+tests/test_api.py
+tests/test_core.py
