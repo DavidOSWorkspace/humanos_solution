@@ -1,2 +1,2 @@
-# humanos_solution
-Solución al problema propuesto por SIlverce.
+# Práctica Silverce
+Solución al problema propuesto por Silverce.
